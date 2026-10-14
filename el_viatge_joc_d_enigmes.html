@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ca" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Viatge - Un Somni d'Enigmes</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            300: '#f6e05e',
+                            400: '#ecc94b',
+                            500: '#d4af37',
+                            600: '#b8962d',
+                            700: '#97751d'
+                        },
+                        mystery: {
+                            900: '#0b0c10',
+                            800: '#13151c',
+                            700: '#1a1d28',
+                            600: '#262a3b'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Cinzel', 'Georgia', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Custom styles & keyframe animations */
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0c10;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Glassmorphism cards */
+        .glass-card {
+            background: rgba(26, 29, 40, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Card transition animations */
+        .step-card {
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
+            transform: translateY(25px) scale(0.97);
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            visibility: hidden;
+        }
+
+        .step-card.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+            position: relative;
+            visibility: visible;
+        }
+
+        /* Golden shimmer button */
+        .btn-gold {
+            background: linear-gradient(135deg, #d4af37 0%, #b8962d 100%);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #e5be48 0%, #c8a234 100%);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-gold:active {
+            transform: translateY(0);
+        }
+
+        /* Shimmer effect on text */
+        .gold-shimmer {
+            background: linear-gradient(90deg, #d4af37 0%, #fff3a8 50%, #d4af37 100%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 4s linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        /* Pulse glow */
+        .pulse-glow {
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.25);
+            animation: pulseGlow 3s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.2); }
+            100% { box-shadow: 0 0 35px rgba(212, 175, 55, 0.45); }
+        }
+
+        /* Canvas background overlay */
+        #fogCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* Ticket stub design */
+        .ticket-border {
+            background-image: radial-gradient(circle at 0 50%, transparent 12px, #1f2330 13px), radial-gradient(circle at 100% 50%, transparent 12px, #1f2330 13px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative selection:bg-gold-500 selection:text-mystery-900">
+
+    <!-- Canvas for subtle fog / floating embers -->
+    <canvas id="fogCanvas"></canvas>
+
+    <!-- Header Controls -->
+    <header class="relative z-20 w-full max-w-4xl mx-auto px-4 py-6 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-full border border-gold-500/40 bg-mystery-800/80 flex items-center justify-center text-gold-400 shadow-lg">
+                <i class="fa-solid fa-compass text-lg animate-spin-slow"></i>
+            </div>
+            <div>
+                <h1 class="font-cinzel text-xl font-bold tracking-wider gold-shimmer">EL VIATGE</h1>
+                <p class="text-xs text-slate-400 font-light">Un enigma de decisions</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <!-- Audio Toggle -->
+            <button id="audioToggle" onclick="toggleAudio()" class="w-10 h-10 rounded-full bg-mystery-800/80 border border-slate-700 hover:border-gold-500/50 flex items-center justify-center text-slate-300 hover:text-gold-400 transition-all shadow" title="Activar/Desactivar música d'ambient">
+                <i class="fa-solid fa-volume-xmark text-sm" id="audioIcon"></i>
+            </button>
+            
+            <!-- Reset Button -->
+            <button onclick="confirmReset()" class="w-10 h-10 rounded-full bg-mystery-800/80 border border-slate-700 hover:border-gold-500/50 flex items-center justify-center text-slate-300 hover:text-gold-400 transition-all shadow" title="Tornar a començar">
+                <i class="fa-solid fa-rotate-left text-sm"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Game Container -->
+    <main class="relative z-10 w-full max-w-2xl mx-auto px-4 py-4 flex-grow flex items-center justify-center">
+        
+        <!-- STEP CONTAINER -->
+        <div class="w-full relative min-h-[500px]">
+
+            <!-- PROGRESS BAR INDICATOR -->
+            <div class="mb-6 bg-mystery-800/90 p-3 rounded-xl border border-slate-800/80 shadow-md">
+                <div class="flex justify-between items-center text-xs text-slate-400 mb-2 px-1 font-medium">
+                    <span id="progressLabel" class="text-gold-400 font-cinzel">Pas 1 de 3</span>
+                    <span id="progressPercent">33% completat</span>
+                </div>
+                <div class="w-full bg-mystery-900 rounded-full h-2 overflow-hidden border border-slate-800">
+                    <div id="progressBar" class="bg-gradient-to-r from-gold-600 to-gold-400 h-full rounded-full transition-all duration-700 ease-out" style="width: 33%"></div>
+                </div>
+            </div>
+
+            <!-- ================= STEP 1: LA LOCOMOTORA ================= -->
+            <div id="step1" class="step-card active glass-card rounded-2xl p-6 sm:p-8">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gold-500/10 text-gold-400 border border-gold-500/20">
+                        <i class="fa-solid fa-train-subway mr-2"></i>Nivell 1
+                    </span>
+                    <span class="text-xs text-slate-400 font-mono">ENIGMA #01</span>
+                </div>
+
+                <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white mb-4 leading-tight">
+                    El somni de la Locomotora
+                </h2>
+
+                <div class="space-y-4 text-slate-300 text-sm sm:text-base leading-relaxed mb-6 font-light">
+                    <p>
+                        Després d’una llarga estona de pessigolles, et quedes adormida i entres en un somni profund i plaent. Un núvol et transporta i t’endinsa dins d’una boira cada cop més espessa. Aviat t'adones que la boira és, en realitat, el fum d’una gran locomotora en marxa. Sense saber com, et trobes a dins d'un dels vagons, asseguda i sola.
+                    </p>
+                    <p>
+                        Notes alguna cosa a la butxaca. És una nota plegada. A la part del darrere hi té dibuixada una <strong class="text-gold-400 font-normal">clau de sol</strong>, però quan l'obres, veus que el paper està completament en blank. O potser no? Intueixes que, amb la llum adequada o revelant el seu secret, aquest paper té una història per explicar-te.
+                    </p>
+                    <p>
+                        Mentre rumies com desxifrar el missatge de la nota, mires per la finestra. El tren està frenant; acaba d'arribar a l'andana d'una ciutat desconeguda i l'aire de fora et convida a explorar.
+                    </p>
+                </div>
+
+                <!-- Clue / Question Box -->
+                <div class="bg-mystery-800/90 border-l-4 border-gold-500 p-4 rounded-r-xl mb-6 shadow-inner">
+                    <div class="flex items-start space-x-3">
+                        <i class="fa-solid fa-lightbulb text-gold-400 text-lg mt-0.5"></i>
+                        <div class="text-xs sm:text-sm text-slate-300">
+                            <p class="font-semibold text-gold-300 mb-1">Quina és la teva decisió?</p>
+                            <p class="text-slate-400">Pots investigar desxifrant el nom de l'artista (<span class="text-slate-200 underline cursor-pointer" onclick="fillInput('pass1', 'BARRY B')">BARRY B</span>) o decidir baixar del tren (<span class="text-slate-200 underline cursor-pointer" onclick="fillInput('pass1', 'BAIXAR')">BAIXAR</span>).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input area -->
+                <div class="space-y-3">
+                    <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold">
+                        Introdueix la teva resposta o decisió
+                    </label>
+                    <div class="relative">
+                        <input type="text" id="pass1" onkeydown="handleEnter(event, checkStep1)" placeholder="Ex: BARRY B o BAIXAR..." class="w-full bg-mystery-900/90 border border-slate-700 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/20 text-white placeholder-slate-500 px-4 py-3.5 rounded-xl text-center font-medium tracking-wide outline-none transition-all">
+                        <button onclick="clearInput('pass1')" class="absolute right-3 top-3.5 text-slate-500 hover:text-slate-300 text-sm p-1">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Error Msg -->
+                    <div id="err1" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 text-xs sm:text-sm p-3 rounded-lg text-center flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-circle-exclamation text-red-400"></i>
+                        <span>Contrasenya o decisió no reconeguda. Revisa les teves deduccions!</span>
+                    </div>
+
+                    <button onclick="checkStep1()" class="w-full btn-gold text-mystery-900 font-bold py-3.5 px-6 rounded-xl flex items-center justify-center space-x-2 text-sm sm:text-base tracking-wide">
+                        <span>DESBLOQUEJAR CAMÍ</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= STEP 2A: CONCIERTO ================= -->
+            <div id="step2A" class="step-card glass-card rounded-2xl p-6 sm:p-8">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gold-500/10 text-gold-400 border border-gold-500/20">
+                        <i class="fa-solid fa-guitar mr-2"></i>Nivell 2A
+                    </span>
+                    <span class="text-xs text-slate-400 font-mono">OPCIÓ CONCERT</span>
+                </div>
+
+                <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white mb-4 leading-tight">
+                    El Guarda-roba del Concert
+                </h2>
+
+                <div class="bg-mystery-900/80 border border-gold-500/30 p-4 sm:p-5 rounded-xl mb-5 space-y-2">
+                    <p class="italic text-gold-300 font-serif text-sm sm:text-base">
+                        «Eh, perdimos el control y luego la esperanza como un rehén, en un silverado, buscando un espejismo que se desvanecerá...»
+                    </p>
+                    <p class="italic text-slate-300 font-serif text-xs sm:text-sm text-right">
+                        «¡Gracias a todos, un placer, os quiero!»
+                    </p>
+                </div>
+
+                <div class="space-y-4 text-slate-300 text-sm sm:text-base leading-relaxed mb-6 font-light">
+                    <p>
+                        Diu l'artista mentre el bateria fa el seu últim break, el guitarra toca el seu últim solo i el tècnic de llums atenua l'escenari per acomiadar un públic exhaust.
+                    </p>
+                    <p>
+                        És hora de sortir de la sala. Fa una humitat fresca al carrer, així que toca passar pel guarda-roba. El problema és que no recordes com era el teu abric, així que et tocarà guiar-te per l’olor que desprèn, ja que just abans d’entrar al concert has estat gaudint de la gastronomia local.
+                    </p>
+                    <div class="bg-mystery-800/80 p-4 rounded-xl border border-slate-700/60 space-y-3">
+                        <p class="text-xs uppercase tracking-wider text-gold-400 font-semibold">La noia del guarda-roba et mostra dos abrics:</p>
+                        <ul class="space-y-2 text-xs sm:text-sm">
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-utensils text-gold-400 mt-1"></i>
+                                <span><strong>Abric 1:</strong> Fa olor de ria del Nervión, de 'cali' i de txuleton freshly made.</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-wine-glass text-gold-400 mt-1"></i>
+                                <span><strong>Abric 2:</strong> Desprèn aroma de mar Atlàntic, d'albariño i de marisc fresc.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Input area -->
+                <div class="space-y-3">
+                    <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold">
+                        Amb quin abric surts? Introdueix la ciutat (BILBAO o CORUÑA)
+                    </label>
+                    <div class="relative">
+                        <input type="text" id="pass2A" onkeydown="handleEnter(event, checkStep2A)" placeholder="Escriu BILBAO o CORUÑA..." class="w-full bg-mystery-900/90 border border-slate-700 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/20 text-white placeholder-slate-500 px-4 py-3.5 rounded-xl text-center font-medium tracking-wide outline-none transition-all">
+                        <button onclick="clearInput('pass2A')" class="absolute right-3 top-3.5 text-slate-500 hover:text-slate-300 text-sm p-1">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Options quick buttons -->
+                    <div class="flex space-x-2 pt-1">
+                        <button onclick="fillInput('pass2A', 'BILBAO')" class="flex-1 bg-mystery-800 hover:bg-mystery-700 border border-slate-700 text-xs py-2 rounded-lg text-slate-300 transition">
+                            <i class="fa-solid fa-city mr-1 text-gold-400"></i> Bilbao
+                        </button>
+                        <button onclick="fillInput('pass2A', 'CORUÑA')" class="flex-1 bg-mystery-800 hover:bg-mystery-700 border border-slate-700 text-xs py-2 rounded-lg text-slate-300 transition">
+                            <i class="fa-solid fa-anchor mr-1 text-gold-400"></i> A Coruña
+                        </button>
+                    </div>
+
+                    <!-- Error Msg -->
+                    <div id="err2A" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 text-xs sm:text-sm p-3 rounded-lg text-center flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-circle-exclamation text-red-400"></i>
+                        <span>Ciutat no vàlida. Tria entre BILBAO o CORUÑA!</span>
+                    </div>
+
+                    <button onclick="checkStep2A()" class="w-full btn-gold text-mystery-900 font-bold py-3.5 px-6 rounded-xl flex items-center justify-center space-x-2 text-sm sm:text-base tracking-wide">
+                        <span>CONFIRMAR ELECCIÓ</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= STEP 2B: ESTACIÓ / VIAJE ================= -->
+            <div id="step2B" class="step-card glass-card rounded-2xl p-6 sm:p-8">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gold-500/10 text-gold-400 border border-gold-500/20">
+                        <i class="fa-solid fa-plane-departure mr-2"></i>Nivell 2B
+                    </span>
+                    <span class="text-xs text-slate-400 font-mono">OPCIÓ VIATGE</span>
+                </div>
+
+                <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white mb-4 leading-tight">
+                    L'Estació del Temps
+                </h2>
+
+                <div class="space-y-4 text-slate-300 text-sm sm:text-base leading-relaxed mb-6 font-light">
+                    <p>
+                        Et trobes desorientada. Encara no assimiles com vas arribar al tren i ja has decidit baixar-ne. En aquest indret no sembla que hi hagi ningú, però tot està absolutament intacte; sembla un 'backroom', un espai buit i fora del temps.
+                    </p>
+                    <p>
+                        Vols trobar-li el sentit a tot plegat, així que comences a caminar i a observar els bancs un per un, mentre el tren torna a rodar i desapareix lentament expulsant una densa cortina de fum.
+                    </p>
+                    
+                    <div class="bg-mystery-800/80 p-4 rounded-xl border border-slate-700/60 space-y-3">
+                        <p class="text-xs uppercase tracking-wider text-gold-400 font-semibold">De sobte, trobes dos objectes singulars sobre un banc:</p>
+                        <ul class="space-y-2 text-xs sm:text-sm">
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-cross text-gold-400 mt-1"></i>
+                                <span><strong>Objecte 1:</strong> Una creu amb una anella circular al mig (Creu Cèltica).</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <i class="fa-solid fa-ring text-gold-400 mt-1"></i>
+                                <span><strong>Objecte 2:</strong> Un anell d’or tricolor de gran artesania.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <p class="italic text-center text-gold-300 font-serif text-sm border-t border-b border-slate-800 py-2">
+                        «Si vols trobar respostes, dirigeix-te allà d’on provinc»
+                    </p>
+                </div>
+
+                <!-- Input area -->
+                <div class="space-y-3">
+                    <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold">
+                        A quina ciutat et dirigeixes? (EDIMBURG o FLORENCIA)
+                    </label>
+                    <div class="relative">
+                        <input type="text" id="pass2B" onkeydown="handleEnter(event, checkStep2B)" placeholder="Escriu EDIMBURG o FLORENCIA..." class="w-full bg-mystery-900/90 border border-slate-700 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/20 text-white placeholder-slate-500 px-4 py-3.5 rounded-xl text-center font-medium tracking-wide outline-none transition-all">
+                        <button onclick="clearInput('pass2B')" class="absolute right-3 top-3.5 text-slate-500 hover:text-slate-300 text-sm p-1">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Options quick buttons -->
+                    <div class="flex space-x-2 pt-1">
+                        <button onclick="fillInput('pass2B', 'EDIMBURG')" class="flex-1 bg-mystery-800 hover:bg-mystery-700 border border-slate-700 text-xs py-2 rounded-lg text-slate-300 transition">
+                            <i class="fa-solid fa-castle mr-1 text-gold-400"></i> Edimburg
+                        </button>
+                        <button onclick="fillInput('pass2B', 'FLORENCIA')" class="flex-1 bg-mystery-800 hover:bg-mystery-700 border border-slate-700 text-xs py-2 rounded-lg text-slate-300 transition">
+                            <i class="fa-solid fa-palette mr-1 text-gold-400"></i> Florència
+                        </button>
+                    </div>
+
+                    <!-- Error Msg -->
+                    <div id="err2B" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 text-xs sm:text-sm p-3 rounded-lg text-center flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-circle-exclamation text-red-400"></i>
+                        <span>Ciutat no vàlida. Tria entre EDIMBURG o FLORENCIA!</span>
+                    </div>
+
+                    <button onclick="checkStep2B()" class="w-full btn-gold text-mystery-900 font-bold py-3.5 px-6 rounded-xl flex items-center justify-center space-x-2 text-sm sm:text-base tracking-wide">
+                        <span>CONFIRMAR ELECCIÓ</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= FINAL STEP ================= -->
+            <div id="stepFinal" class="step-card glass-card rounded-2xl p-6 sm:p-8">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 rounded-full bg-gold-500/20 border-2 border-gold-400 flex items-center justify-center mx-auto mb-3 pulse-glow">
+                        <i class="fa-solid fa-gift text-2xl text-gold-400"></i>
+                    </div>
+                    <span class="text-xs uppercase tracking-widest text-gold-400 font-semibold">Misteri Resolt</span>
+                    <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white mt-1">El Teu Regal Final</h2>
+                </div>
+
+                <!-- BOARDING PASS / CONCERT TICKET DISPLAY -->
+                <div class="bg-mystery-900 border border-gold-500/40 rounded-xl overflow-hidden mb-6 shadow-2xl relative">
+                    <div class="bg-gradient-to-r from-gold-600 to-gold-500 px-4 py-2 flex justify-between items-center text-mystery-900 font-bold text-xs uppercase tracking-wider">
+                        <span><i class="fa-solid fa-ticket mr-1.5"></i> PASS D'EXPERIÈNCIA</span>
+                        <span id="ticketCode">#VIATGE-2026</span>
+                    </div>
+                    
+                    <div class="p-5 space-y-3">
+                        <div class="flex justify-between items-start border-b border-slate-800 pb-3">
+                            <div>
+                                <p class="text-xs text-slate-400 uppercase tracking-wider">Elecció de Viatge</p>
+                                <h3 id="chosenDestinationTitle" class="text-lg sm:text-xl font-bold text-gold-300 font-cinzel mt-0.5">...</h3>
+                            </div>
+                            <div class="text-right">
+                                <span id="chosenCategoryBadge" class="inline-block px-2.5 py-1 rounded bg-gold-500/10 text-gold-400 border border-gold-500/30 text-xs font-semibold">
+                                    CONCERT / VIATGE
+                                </span>
+                            </div>
+                        </div>
+
+                        <p id="chosenDestinationDesc" class="text-xs sm:text-sm text-slate-300 leading-relaxed font-light">
+                            ...
+                        </p>
+                    </div>
+                </div>
+
+                <!-- BARCELONA / TIBIDABO REVEAL TEXT -->
+                <div class="space-y-4 text-slate-300 text-sm sm:text-base leading-relaxed mb-6 font-light bg-mystery-800/60 p-5 rounded-xl border border-slate-700/60">
+                    <p>
+                        Què bonic és gaudir d’una experiència així a la ciutat més cosmopolita d’Europa. Ets una persona sensata i amb valors identitaris.
+                    </p>
+                    <p>
+                        Tot és tal com ha de ser, però encara et falta retrobar-te amb una activitat ben barcelonina: viure una experiència enigmàtica, endolçada per la fantasia i plena d'il·lusió. Al capdamunt de la ciutat comtal, just a l'indret perfecte per rememorar la infantesa, aquest somni continua la seva ruta cap a l’únic parc de Barcelona on les il·lusions es poden fer reals.
+                    </p>
+                    
+                    <div class="mt-4 p-4 rounded-lg bg-gradient-to-r from-gold-500/20 to-amber-500/10 border border-gold-500/40 text-center">
+                        <p class="text-xs text-gold-300 font-semibold uppercase tracking-wider mb-1"><i class="fa-solid fa-location-dot mr-1"></i> La Sorpresa Final a Barcelona</p>
+                        <p class="font-cinzel text-lg sm:text-xl font-bold text-white">Parc d'Atraccions del Tibidabo 🎡✨</p>
+                    </div>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="space-y-3">
+                    <button onclick="triggerConfetti()" class="w-full btn-gold text-mystery-900 font-bold py-3.5 px-6 rounded-xl flex items-center justify-center space-x-2 text-sm sm:text-base tracking-wide">
+                        <i class="fa-solid fa-sparkles"></i>
+                        <span>CELEBRAR EL REGAL!</span>
+                    </button>
+
+                    <button onclick="confirmReset()" class="w-full bg-mystery-800 hover:bg-mystery-700 border border-slate-700 text-slate-300 font-medium py-2.5 px-4 rounded-xl text-xs sm:text-sm transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>Explorar les altres rutes del joc</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 w-full max-w-4xl mx-auto px-4 py-6 text-center text-xs text-slate-500">
+        <p>Creat amb <i class="fa-solid fa-heart text-red-500"></i> per a una aventura inoblidable</p>
+    </footer>
+
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- Application Script -->
+    <script>
+        // Game State
+        let currentState = 'step1';
+        let chosenDestination = null; // 'BILBAO', 'CORUÑA', 'EDIMBURG', 'FLORENCIA'
+        let audioContext = null;
+        let isAudioPlaying = false;
+
+        // Clean string helper (handles accents, diacritics & uppercase)
+        function cleanString(str) {
+            if (!str) return '';
+            return str.trim()
+                      .toUpperCase()
+                      .normalize("NFD")
+                      .replace(/[\u0300-\u036f]/g, "");
+        }
+
+        // Fill helper
+        function fillInput(inputId, text) {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.value = text;
+                input.focus();
+            }
+            playClickSound();
+        }
+
+        function clearInput(inputId) {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        function handleEnter(e, callback) {
+            if (e.key === 'Enter') {
+                callback();
+            }
+        }
+
+        // Navigation Controller
+        function showStep(stepId) {
+            playChimeSound();
+            
+            // Hide all cards
+            const cards = document.querySelectorAll('.step-card');
+            cards.forEach(card => card.classList.remove('active'));
+
+            // Show selected card
+            const target = document.getElementById(stepId);
+            if (target) {
+                target.classList.add('active');
+            }
+
+            currentState = stepId;
+
+            // Update Progress Bar
+            const bar = document.getElementById('progressBar');
+            const percent = document.getElementById('progressPercent');
+            const label = document.getElementById('progressLabel');
+
+            if (stepId === 'step1') {
+                bar.style.width = '33%';
+                percent.innerText = '33% completat';
+                label.innerText = 'Pas 1 de 3';
+            } else if (stepId === 'step2A' || stepId === 'step2B') {
+                bar.style.width = '66%';
+                percent.innerText = '66% completat';
+                label.innerText = 'Pas 2 de 3';
+            } else if (stepId === 'stepFinal') {
+                bar.style.width = '100%';
+                percent.innerText = '100% completat';
+                label.innerText = 'Pas Final';
+                renderFinalCard();
+                triggerConfetti();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Step 1 logic
+        function checkStep1() {
+            const val = cleanString(document.getElementById('pass1').value);
+            const err = document.getElementById('err1');
+
+            // Concert Option (Barry B)
+            if (val.includes("BARRY") || val.includes("SOL") || val.includes("MUSICA") || val.includes("CONCERT")) {
+                err.classList.add('hidden');
+                showStep('step2A');
+            } 
+            // Trip Option (Baixar)
+            else if (val.includes("BAIXAR") || val.includes("BAIXO") || val.includes("ANDANA") || val.includes("ESTACIO") || val.includes("VIATGE")) {
+                err.classList.add('hidden');
+                showStep('step2B');
+            } 
+            else {
+                err.classList.remove('hidden');
+                playErrorSound();
+            }
+        }
+
+        // Step 2A logic (Concert)
+        function checkStep2A() {
+            const val = cleanString(document.getElementById('pass2A').value);
+            const err = document.getElementById('err2A');
+
+            if (val.includes("BILBAO")) {
+                chosenDestination = 'BILBAO';
+                err.classList.add('hidden');
+                showStep('stepFinal');
+            } else if (val.includes("CORUNA") || val.includes("A CORUNA") || val.includes("CORUÑA") || val.includes("GALICIA")) {
+                chosenDestination = 'CORUÑA';
+                err.classList.add('hidden');
+                showStep('stepFinal');
+            } else {
+                err.classList.remove('hidden');
+                playErrorSound();
+            }
+        }
+
+        // Step 2B logic (Trip)
+        function checkStep2B() {
+            const val = cleanString(document.getElementById('pass2B').value);
+            const err = document.getElementById('err2B');
+
+            if (val.includes("EDIMBURG") || val.includes("EDIMBURGO") || val.includes("CREU") || val.includes("ESCOCIA")) {
+                chosenDestination = 'EDIMBURG';
+                err.classList.add('hidden');
+                showStep('stepFinal');
+            } else if (val.includes("FLORENCIA") || val.includes("ANELL") || val.includes("ITALIA")) {
+                chosenDestination = 'FLORENCIA';
+                err.classList.add('hidden');
+                showStep('stepFinal');
+            } else {
+                err.classList.remove('hidden');
+                playErrorSound();
+            }
+        }
+
+        // Render final ticket card depending on choice
+        function renderFinalCard() {
+            const titleEl = document.getElementById('chosenDestinationTitle');
+            const descEl = document.getElementById('chosenDestinationDesc');
+            const badgeEl = document.getElementById('chosenCategoryBadge');
+
+            if (chosenDestination === 'BILBAO') {
+                titleEl.innerText = "Concert de Barry B a Bilbao";
+                badgeEl.innerText = "CONCERT + RUTA PINTXOS";
+                descEl.innerText = "Ens en anem de concert a Bilbao! Gaudirem en directe de la música de Barry B i d'una escapada gaudint de la ria del Nervión i el millor txuleton.";
+            } else if (chosenDestination === 'CORUÑA') {
+                titleEl.innerText = "Concert de Barry B a A Coruña";
+                badgeEl.innerText = "CONCERT + MARISCADA";
+                descEl.innerText = "Ens en anem a Galícia! Gaudirem del concert de Barry B a A Coruña, envoltat de la brisa de l'Atlàntic, albariño fresc i el millor marisc.";
+            } else if (chosenDestination === 'EDIMBURG') {
+                titleEl.innerText = "Escapada Mística a Edimburg";
+                badgeEl.innerText = "VIATGE CULTURAL";
+                descEl.innerText = "Viatgem fins a la capital d'Escòcia! Passejarem entre castells medievals, carrers plens d'història i paisatges de somni.";
+            } else if (chosenDestination === 'FLORENCIA') {
+                titleEl.innerText = "Escapada Romàntica a Florència";
+                badgeEl.innerText = "VIATGE ART I CULTURA";
+                descEl.innerText = "Ens n'anem al cor de la Toscana italiana! Ens espera una ciutat plena d'art, el Ponte Vecchio, gastronomia inoblidable i carrerons plens de màgia.";
+            }
+        }
+
+        // Reset
+        function confirmReset() {
+            document.getElementById('pass1').value = '';
+            document.getElementById('pass2A').value = '';
+            document.getElementById('pass2B').value = '';
+            document.getElementById('err1').classList.add('hidden');
+            document.getElementById('err2A').classList.add('hidden');
+            document.getElementById('err2B').classList.add('hidden');
+            chosenDestination = null;
+            showStep('step1');
+        }
+
+        // Confetti burst
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 90,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#d4af37', '#ffffff', '#f6e05e', '#b8962d']
+                });
+            }
+        }
+
+        // Web Audio Synthesizer (No external sound files required)
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playClickSound() {
+            try {
+                initAudio();
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, audioContext.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.05);
+                gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.05);
+            } catch(e) {}
+        }
+
+        function playChimeSound() {
+            try {
+                initAudio();
+                const now = audioContext.currentTime;
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, now); // A4
+                osc.frequency.setValueAtTime(554.37, now + 0.1); // C#5
+                osc.frequency.setValueAtTime(659.25, now + 0.2); // E5
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.start(now);
+                osc.stop(now + 0.6);
+            } catch(e) {}
+        }
+
+        function playErrorSound() {
+            try {
+                initAudio();
+                const now = audioContext.currentTime;
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.setValueAtTime(140, now + 0.1);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } catch(e) {}
+        }
+
+        function toggleAudio() {
+            initAudio();
+            const icon = document.getElementById('audioIcon');
+            if (isAudioPlaying) {
+                isAudioPlaying = false;
+                icon.className = "fa-solid fa-volume-xmark text-sm";
+            } else {
+                isAudioPlaying = true;
+                icon.className = "fa-solid fa-volume-high text-sm text-gold-400";
+                playChimeSound();
+            }
+        }
+
+        // Fog Canvas Animation Effect
+        const canvas = document.getElementById('fogCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const particles = Array.from({ length: 35 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 2.5 + 0.5,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: -Math.random() * 0.4 - 0.1,
+            alpha: Math.random() * 0.5 + 0.2
+        }));
+
+        function animateFog() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.y < 0) {
+                    p.y = canvas.height;
+                    p.x = Math.random() * canvas.width;
+                }
+                if (p.x < 0) p.x = canvas.width;
+                if (p.x > canvas.width) p.x = 0;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(212, 175, 55, ${p.alpha * 0.4})`;
+                ctx.fill();
+            });
+
+            requestAnimationFrame(animateFog);
+        }
+
+        window.onload = function() {
+            animateFog();
+        };
+    </script>
+</body>
+</html>

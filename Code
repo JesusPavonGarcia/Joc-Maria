@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Viatge</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Georgia', serif;
+            background: #1e1e24;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            background: #2b2b36;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-width: 550px;
+            width: 100%;
+            display: none;
+            border: 1px solid #3d3d4e;
+        }
+        .card.active {
+            display: block;
+        }
+        h2 {
+            color: #d4af37;
+            margin-top: 0;
+            font-size: 1.5em;
+            border-bottom: 1px solid #3d3d4e;
+            padding-bottom: 10px;
+        }
+        p {
+            line-height: 1.7;
+            font-size: 1.05em;
+            color: #c8c8d0;
+        }
+        .quote {
+            font-style: italic;
+            background: #22222b;
+            padding: 12px;
+            border-left: 3px solid #d4af37;
+            margin: 15px 0;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0 10px 0;
+            border: 1px solid #444;
+            background: #18181f;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 1em;
+            text-align: center;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #d4af37;
+            color: #1e1e24;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #b8962d;
+        }
+        .error {
+            color: #ff6b6b;
+            font-size: 0.9em;
+            display: none;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NIVELL 1 -->
+    <div class="card active" id="step1">
+        <h2>🚂 Nivell 1: El somni de la Locomotora</h2>
+        <p>Després d’una llarga estona de pessigolles, et quedes adormida i entres en un somni profund i plaent. Un núvol et transporta i t’endinsa dins d’una boira cada cop més espessa. Aviat t'adones que la boira és, en realitat, el fum d’una gran locomotora en marxa. Sense saber com, et trobes a dins d'un dels vagons, asseguda i sola.</p>
+        <p>Notes alguna cosa a la butxaca. És una nota plegada. A la part del darrere hi té dibuixada una <strong>clau de sol</strong>, però quan l'obres, veus que el paper està completament en blanc. O potser no? Intueixes que, amb la llum adequada o revelant el seu secret, aquest paper té una història per explicar-te.</p>
+        <p>Mentre rumies com desxifrar el missatge de la nota, mires per la finestra. El tren està frenant; acaba d'arribar a l'andana d'una ciutat desconeguda i l'aire de fora et convida a explorar.</p>
+        <div class="quote">
+            <strong>Instruccions:</strong> Investiga les opcions fent preguntes. Si vols desxifrar la nota de música, escriu la contrasenya de la persona revelada. Si prefereixes baixar a l'andana, escriu la paraula per continuar.
+        </div>
+        <input type="text" id="pass1" placeholder="Escriu la teva decisió o nom desxifrat...">
+        <div class="error" id="err1">Contrasenya o decisió incorrecta. Continua investigant!</div>
+        <button onclick="checkStep1()">Desbloquejar camí</button>
+    </div>
+
+    <!-- NIVELL 2A (CONCIERTO) -->
+    <div class="card" id="step2A">
+        <h2>🎸 Nivell 2A: El Guarda-roba del Concert</h2>
+        <p class="quote">«Eh, perdimos el control y luego la esperanza como un rehén, en un silverado, buscando un espejismo que se desvanecerá...»<br><br>«¡Gracias a todos, un placer, os quiero!»</p>
+        <p>Diu l'artista mentre el bateria fa el seu últim break, el guitarra toca el seu últim solo i el tècnic de llums atenua l'escenari per acomiadar un públic exhaust.</p>
+        <p>És hora de sortir de la sala. Fa una humitat fresca al carrer, així que toca passar pel guarda-roba. El problema és que no recordes com era el teu abric, així que et tocarà guiar-te per l’olor que desprèn, ja que just abans d’entrar al concert has estat gaudint de la gastronomia local.</p>
+        <p>La noia del guarda-roba et posa dos abrics al davant:<br>
+        1. El primer fa olor de <strong>ria del Nervión, de 'cali' i de txuleton</strong>.<br>
+        2. El segon desprèn aroma de <strong>mar Atlàntic, d'albariño i de marisc fresc</strong>.</p>
+        <input type="text" id="pass2A" placeholder="Escriu la ciutat triada (Bilbao o Coruña)...">
+        <div class="error" id="err2A">Ciutat incorrecta. Revisa els sabors i olors de l'abric!</div>
+        <button onclick="checkStep2A()">Confirmar elecció</button>
+    </div>
+
+    <!-- NIVELL 2B (ESTACIÓ / BACKROOM) -->
+    <div class="card" id="step2B">
+        <h2>🏛️ Nivell 2B: L'Estació del Temps</h2>
+        <p>Et trobes desorientada. Encara no assimiles com vas arribar al tren i ja has decidit baixar-ne. En aquest indret no sembla que hi hagi ningú, però tot està absolutament intacte; sembla un 'backroom', un espai buit i fora del temps.</p>
+        <p>Vols trobar-li el sentit a tot plegat, així que comences a caminar i a observar els bancs un per un, mentre el tren torna a rodar i desapareix lentament expulsant una densa cortina de fum.</p>
+        <p>De sobte, trobes dos objectes reposant sobre un seient:<br>
+        1. Una <strong>creu amb una anella circular al mig</strong>.<br>
+        2. Un <strong>anell d’or tricolor</strong>.</p>
+        <p class="quote">«Si vols trobar respostes, dirigeix-te allà d’on provinc»</p>
+        <input type="text" id="pass2B" placeholder="Escriu la ciutat triada (Edimburg o Florència)...">
+        <div class="error" id="err2B">Ciutat incorrecta. Quin és el lloc d'origen d'aquests objectes?</div>
+        <button onclick="checkStep2B()">Confirmar elecció</button>
+    </div>
+
+    <!-- FINAL -->
+    <div class="card" id="stepFinal">
+        <h2>🎉 El Teu Destí i el Desenllaç!</h2>
+        <p id="finalTextDestino"></p>
+        <p>Què bonic és gaudir d’una experiència així a la ciutat més cosmopolita d’Europa. Ets una persona sensata i amb valors identitaris.</p>
+        <p>Tot és tal com ha de ser, però encara et falta retrobar-te amb una activitat ben barcelonina: viure una experiència enigmàtica, endolçada per la fantasia i plena d'il·lusió. Al capdamunt de la ciutat comtal, just a l'indret perfecte per rememorar la infantesa, aquest somni continua la seva ruta cap a l’únic parc de Barcelona on les il·lusions es poden fer reals.</p>
+        <div class="quote">
+            <strong>📍 Propera parada:</strong> Parc d'Atraccions del Tibidabo!
+        </div>
+    </div>
+
+    <script>
+        function cleanString(str) {
+            return str.trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
+
+        function checkStep1() {
+            const val = cleanString(document.getElementById('pass1').value);
+            const err = document.getElementById('err1');
+
+            // Opció Concurs / Barry B -> Nivell 2A
+            if (val.includes("BARRY") || val.includes("BARRY B")) {
+                document.getElementById('step1').classList.remove('active');
+                document.getElementById('step2A').classList.add('active');
+            } 
+            // Opció Viatge / Baixar -> Nivell 2B
+            else if (val.includes("BAIXAR") || val.includes("ANDANA") || val.includes("ESTACIO")) {
+                document.getElementById('step1').classList.remove('active');
+                document.getElementById('step2B').classList.add('active');
+            } else {
+                err.style.display = 'block';
+            }
+        }
+
+        function checkStep2A() {
+            const val = cleanString(document.getElementById('pass2A').value);
+            const err = document.getElementById('err2A');
+            const destText = document.getElementById('finalTextDestino');
+
+            if (val.includes("BILBAO")) {
+                destText.innerHTML = "<strong>Has escollit el concert de Barry B a BILBAO!</strong> 🎟️🎸";
+                document.getElementById('step2A').classList.remove('active');
+                document.getElementById('stepFinal').classList.add('active');
+            } else if (val.includes("CORUNA") || val.includes("A CORUNA") || val.includes("CORUÑA")) {
+                destText.innerHTML = "<strong>Has escollit el concert de Barry B a A CORUÑA!</strong> 🎟️🎸";
+                document.getElementById('step2A').classList.remove('active');
+                document.getElementById('stepFinal').classList.add('active');
+            } else {
+                err.style.display = 'block';
+            }
+        }
+
+        function checkStep2B() {
+            const val = cleanString(document.getElementById('pass2B').value);
+            const err = document.getElementById('err2B');
+            const destText = document.getElementById('finalTextDestino');
+
+            if (val.includes("EDIMBURG") || val.includes("EDIMBURGO")) {
+                destText.innerHTML = "<strong>Has escollit la teva escapada a EDIMBURG!</strong> 🏰✈️";
+                document.getElementById('step2B').classList.remove('active');
+                document.getElementById('stepFinal').classList.add('active');
+            } else if (val.includes("FLORENCIA") || val.includes("FLORENCiA")) {
+                destText.innerHTML = "<strong>Has escollit la teva escapada a FLORÈNCIA!</strong> 🎨✈️";
+                document.getElementById('step2B').classList.remove('active');
+                document.getElementById('stepFinal').classList.add('active');
+            } else {
+                err.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

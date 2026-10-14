@@ -1,1 +1,333 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Viatge - Joc de Misteri</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #121216;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 580px;
+            perspective: 1000px;
+        }
+
+        .card {
+            background: #1e1e24;
+            border: 1px solid #2d2d38;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .card.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tag {
+            display: inline-block;
+            background: rgba(212, 175, 55, 0.15);
+            color: #d4af37;
+            font-size: 0.8em;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            color: #ffffff;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        p {
+            color: #a0aec0;
+            line-height: 1.65;
+            font-size: 1em;
+            margin-bottom: 16px;
+        }
+
+        .quote {
+            background: #16161c;
+            border-left: 3px solid #d4af37;
+            padding: 14px 18px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: #cbd5e0;
+            font-size: 0.95em;
+        }
+
+        .input-group {
+            margin-top: 30px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 16px;
+            background: #141418;
+            border: 1px solid #323240;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1em;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"]:focus {
+            border-color: #d4af37;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 16px;
+            padding: 16px;
+            background: #d4af37;
+            color: #121216;
+            font-weight: 700;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+        }
+
+        button:hover {
+            background: #c29f2e;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .error-msg {
+            color: #fc8181;
+            font-size: 0.9em;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .final-box {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px dashed #d4af37;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 24px;
+            color: #f6ad55;
+            font-weight: 600;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- NIVELL 1 -->
+    <div class="card active" id="step1">
+        <span class="tag">La Cruïlla</span>
+        <h2>🚂 El somni de la Locomotora</h2>
+        <p>Després d’una llarga estona de pessigolles, et quedes adormida i entres en un somni profund i plaent. Un núvol et transporta i t’endinsa dins d’una boira cada cop més espessa. Aviat t'adones que la boira és, en realitat, el fum d’una gran locomotora en marxa. Sense saber com, et trobes a dins d'un dels vagons, asseguda i sola.</p>
+        <p>Notes alguna cosa a la butxaca. És una nota plegada. A la part del darrere hi té dibuixada una clau de sol, però quan l'obres, veus que el paper està completament en blanc. O potser no? Intueixes que, amb la llum adequada o revelant el seu secret, aquest paper té una història per explicar-te.</p>
+        <p>Mentre rumies com desxifrar el missatge de la nota, mires per la finestra. El tren està frenant; acaba d'arribar a l'andana d'una ciutat desconeguda i l'aire de fora et convida a explorar.</p>
+        
+        <div class="quote">
+            <strong>El teu objectiu:</strong> Hauràs de prendre una decisió. Què fas: et quedes al tren intentant desxifrar el misteri de la nota musical, o abandones el paper i baixes a l'andana per explorar aquest nou destí?
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="input1" placeholder="Introdueix l'acció o la revelació descoberta..." autocomplete="off">
+            <div class="error-msg" id="err1">Això no sembla correcte. Pensa bé la teva resposta.</div>
+            <button onclick="handleStep1()">Avançar</button>
+        </div>
+    </div>
+
+    <!-- NIVELL 2A (CONCERT) -->
+    <div class="card" id="step2A">
+        <span class="tag">L'Olor</span>
+        <h2>🎸 El Guarda-roba</h2>
+        <p>Molt bé, agafes la nota, t’aixeques i comences a donar voltes per el passadís del tren. Arribant fins a la locomotora se t’acut apropar la nota al fanal del tren. El maquinista, amb uns trets arrufats i peluts t’esbronca, però la calor revela un nom escrit amb tinta invisible... Un tal <em>Gabriel Barriuso García</em>.</p>
+        
+        <div class="quote">
+            «Eh, perdimos el control y luego la esperanza como un rehén, en un silverado, buscando un espejismo que se desvanecerá...»<br><br>
+            «¡Gracias a todos, un placer, os quiero!»
+        </div>
+
+        <p>Diu l'artista mentre el bateria fa el seu últim break, el guitarra toca el seu últim solo i el tècnic de llums atenua l'escenari per acomiadar un públic exhaust. Sense veu, la parella es mira i s’abraça per concentrar l’últim anhel del concert després d'haver buidat la seva ànima durant aquella hora i mitja.</p>
+        <p>És hora de sortir de la sala. Fa una humitat fresca al carrer, així que toca passar pel guarda-roba. El problema és que no recordes com era el teu abric, així que et tocarà guiar-te per l’olor que desprèn, ja que just abans d’entrar al concert has estat gaudint de la gastronomia local.</p>
+        <p>La noia del guarda-roba et posa tres abrics al davant:<br>
+        1. El primer fa olor de <strong>Nervión, de 'cali' i de txuleton</strong>.<br>
+        2. El segon desprèn aroma d’<strong>Atlàntic, albariño i marisc</strong>.<br>
+        3. El tercer desprèn olor de <strong>Mediterrani, estrella i pa amb tomàquet</strong>.</p>
+
+        <div class="input-group">
+            <input type="text" id="input2A" placeholder="Cap a on ens porta el teu abric?" autocomplete="off">
+            <div class="error-msg" id="err2A">Aquesta destinació no quadra amb les opcions del guarda-roba.</div>
+            <button onclick="handleStep2A()">Confirmar destí</button>
+        </div>
+    </div>
+
+    <!-- NIVELL 2A ALT (BARCELONA) -->
+    <div class="card" id="step2A_alt">
+        <span class="tag">El Parc</span>
+        <h2>🎡 L'Últim Enigma</h2>
+        <p>Què bonic és gaudir d’un concert a la ciutat més cosmopolita d’Europa. Ets una persona sensata i amb valors identitaris.</p>
+        <p>Tot és tal com ha de ser, però encara et falta retrobar-te amb una activitat ben barcelonina: viure una experiència enigmàtica, endolçada per la fantasia i plena d'il·lusió.</p>
+        <p>Al capdamunt de la ciutat comtal, just a l'indret perfecte per rememorar la infantesa, aquest somni continua la seva ruta cap a l’únic parc on les il·lusions es poden fer reals.</p>
+
+        <div class="input-group">
+            <input type="text" id="input2A_alt" placeholder="Quin és aquest lloc exacte?" autocomplete="off">
+            <div class="error-msg" id="err2A_alt">Aquest lloc no es troba al capdamunt. Torna a intentar-ho.</div>
+            <button onclick="handleStep2A_alt()">Desvetllar el secret</button>
+        </div>
+    </div>
+
+    <!-- NIVELL 2B (BACKROOM / ESTACIÓ) -->
+    <div class="card" id="step2B">
+        <span class="tag">Els Objectes</span>
+        <h2>🏛️ L'Estació del Temps</h2>
+        <p>Et trobes desorientada. Encara no assimiles com vas arribar al tren i ja has decidit baixar-ne. En aquest indret no sembla que hi hagi ningú, però tot està absolutament intacte; sembla un 'backroom', un espai buit i fora del temps.</p>
+        <p>Vols trobar-li el sentit a tot plegat, així que comences a caminar i a observar els bancs un per un, mentre el tren torna a rodar i desapareix lentament expulsant una densa cortina de fum.</p>
+        <p>Així que decideixes baixar del tren amb l'enigma a mig resoldre. Sembla que la curiositat per descobrir què hi ha a fora ha pogut més que el misteri de la clau de sol. Ets una viatgera sense miraments ni fronteres, decidida a aventurar-se més enllà dels Pirineus. Però aquest cop no serà fàcil.</p>
+        <p>En baixar a l’estació, observes un edifici majestuós, de ferro i d'estil modernista, amb vidrieres que deixen traslluir la llum del dia. Sembla que hagis tornat a la casella de sortida. No entens res. Com ha estat capaç el tren de viatjar enrere en el temps? No és possible que tornis a ser a Barcelona...</p>
+        <p>Comences a mirar els bancs i no hi veus ningú. No hi ha soroll ni l'estrès típic de la gent amb presses. Però de sobte, trobes dos objectes reposant sobre un seient: l'un és una <strong>creu amb una anella circular al mig</strong>; l'altre, un <strong>anell d’or tricolor</strong>.</p>
+        
+        <div class="quote">Al costat de cadascun d’ells hi ha un missatge clar: «Si vols trobar respostes, dirigeix-te allà d’on provinc».</div>
+
+        <div class="input-group">
+            <input type="text" id="input2B" placeholder="Allà d'on prové l'objecte..." autocomplete="off">
+            <div class="error-msg" id="err2B">Aquest origen és incorrecte. Investiga millor els objectes.</div>
+            <button onclick="handleStep2B()">Viatjar</button>
+        </div>
+    </div>
+
+    <!-- FINAL -->
+    <div class="card" id="stepFinal">
+        <span class="tag">Desenllaç</span>
+        <h2>🎉 El Regal Revelat!</h2>
+        <p>Has esbrinat la veritat darrere de tots els misteris. El somni es converteix en realitat.</p>
+        <div class="final-box" id="destinationResult">
+            <!-- Es canvia dinàmicament -->
+        </div>
+        <br>
+        <p>Prepara't per gaudir-ho. L'aventura no ha fet més que començar.</p>
+    </div>
+
+</div>
+
+<script>
+    function cleanText(text) {
+        return text.trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function switchCard(currentId, nextId) {
+        const current = document.getElementById(currentId);
+        const next = document.getElementById(nextId);
+        
+        current.classList.remove('active');
+        setTimeout(() => {
+            next.classList.add('active');
+        }, 400);
+    }
+
+    function handleStep1() {
+        const val = cleanText(document.getElementById('input1').value);
+        const err = document.getElementById('err1');
+
+        if (val.includes("BARRY") || val.includes("GABRIEL") || val.includes("BARRIUSO")) {
+            err.style.display = 'none';
+            switchCard('step1', 'step2A');
+        } else if (val.includes("BAIXAR") || val.includes("ANDANA") || val.includes("ESTACIO") || val.includes("FORA") || val.includes("EXPLORAR")) {
+            err.style.display = 'none';
+            switchCard('step1', 'step2B');
+        } else {
+            err.style.display = 'block';
+        }
+    }
+
+    function handleStep2A() {
+        const val = cleanText(document.getElementById('input2A').value);
+        const err = document.getElementById('err2A');
+        const resBox = document.getElementById('destinationResult');
+
+        if (val.includes("BILBAO")) {
+            err.style.display = 'none';
+            resBox.innerHTML = "🎟️ Ens anem al concert de Barry B a BILBAO!";
+            switchCard('step2A', 'stepFinal');
+        } else if (val.includes("CORUNA") || val.includes("CORUNYA")) {
+            err.style.display = 'none';
+            resBox.innerHTML = "🎟️ Ens anem al concert de Barry B a A CORUÑA!";
+            switchCard('step2A', 'stepFinal');
+        } else if (val.includes("BARCELONA") || val.includes("BCN")) {
+            err.style.display = 'none';
+            switchCard('step2A', 'step2A_alt');
+        } else {
+            err.style.display = 'block';
+        }
+    }
+
+    function handleStep2A_alt() {
+        const val = cleanText(document.getElementById('input2A_alt').value);
+        const err = document.getElementById('err2A_alt');
+        const resBox = document.getElementById('destinationResult');
+
+        if (val.includes("TIBIDABO") || val.includes("PARC D'ATRACCIONS") || val.includes("TIBI")) {
+            err.style.display = 'none';
+            resBox.innerHTML = "🎡 Tens concert a Barcelona i ens anem al TIBIDABO!";
+            switchCard('step2A_alt', 'stepFinal');
+        } else {
+            err.style.display = 'block';
+        }
+    }
+
+    function handleStep2B() {
+        const val = cleanText(document.getElementById('input2B').value);
+        const err = document.getElementById('err2B');
+        const resBox = document.getElementById('destinationResult');
+
+        if (val.includes("EDIMBURG") || val.includes("ESCOCIA")) {
+            err.style.display = 'none';
+            resBox.innerHTML = "🏰 Ens anem d'escapada a EDIMBURG!";
+            switchCard('step2B', 'stepFinal');
+        } else if (val.includes("FLORENCIA") || val.includes("ITALIA")) {
+            err.style.display = 'none';
+            resBox.innerHTML = "🎨 Ens anem d'escapada a FLORÈNCIA!";
+            switchCard('step2B', 'stepFinal');
+        } else {
+            err.style.display = 'block';
+        }
+    }
+</script>
+
+</body>
+</html>
